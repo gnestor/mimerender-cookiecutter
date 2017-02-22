@@ -1,12 +1,33 @@
-import os, sys, pipes
+#!/usr/bin/env python
+# coding: utf-8
+
+# Copyright (c) Jupyter Development Team.
+# Distributed under the terms of the Modified BSD License.
+
+from __future__ import print_function
+
+#-----------------------------------------------------------------------------
+# Minimal Python version sanity check
+#-----------------------------------------------------------------------------
+
+import sys
+
+v = sys.version_info
+if v[:2] < (2,7) or (v[0] >= 3 and v[:2] < (3,3)):
+    error = "ERROR: %s requires Python version 2.7 or 3.3 or above." % name
+    print(error, file=sys.stderr)
+    sys.exit(1)
+
+PY3 = (sys.version_info[0] >= 3)
+
+import os
+import pipes
 from subprocess import check_call
 from distutils import log
+from distutils.cmd import Command
 from setuptools import setup
-from setuptools.command.develop import develop
 
 repo_root = os.path.dirname(os.path.abspath(__file__))
-# sym_link = '--symlink' if sys.platform != 'win32' else ''
-# sys_prefix = '--sys-prefix' if os.environ.get('CONDA_DEFAULT_ENV', os.defpath) else ''
 
 if sys.platform == 'win32':
     from subprocess import list2cmdline
@@ -20,70 +41,53 @@ def run(cmd, *args, **kwargs):
     kwargs['shell'] = (sys.platform == 'win32')
     return check_call(cmd, *args, **kwargs)
     
-def which(*args):
-    try:
-        run([*args, '--version'])
-        return True
-    except:
-        return False
+# BEFORE importing distutils, remove MANIFEST. distutils doesn't properly
+# update it when the contents of directories change.
+if os.path.exists('MANIFEST'): os.remove('MANIFEST')
 
-def build_labextension():
-    # Check if npm is installed
-    if not which('npm'):
-        log.error('npm unavailable')
-    # Install Node depedencies for labextension
-    try:
-        log.info('Installing labextension dependencies. This may take a while...')
+class NPM(Command):
+    description = 'Install JavaScript dependencies using npm'
+
+    user_options = []
+
+    # Representative files that should exist after a successful build
+    targets = [
+        # labextension
+        os.path.join(repo_root, '{{cookiecutter.extension_name}}', 'static', '{{cookiecutter.extension_name}}.bundle.js'),
+        os.path.join(repo_root, '{{cookiecutter.extension_name}}', 'static', '{{cookiecutter.extension_name}}.css'),
+        # labextension
+        os.path.join(repo_root, '{{cookiecutter.extension_name}}', 'static', 'index.js'),
+        os.path.join(repo_root, '{{cookiecutter.extension_name}}', 'static', 'extension.js')
+    ]
+
+    def initialize_options(self):
+        pass
+
+    def finalize_options(self):
+        pass
+
+    def has_npm(self):
+        try:
+            run(['npm', '--version'])
+            return True
+        except:
+            return False
+
+    def run(self):
+        has_npm = self.has_npm()
+        if not has_npm:
+            log.error("`npm` unavailable. If you're running this command using sudo, make sure `npm` is available to sudo")
+        log.info("Installing labextension dependencies with npm. This may take a while...")
         run(['npm', 'install'], cwd=os.path.join(repo_root, 'labextension'))
-    except OSError as e:
-        log.error("Failed to install Node  dependencies for labextension: %s" % e)
-        raise
-        
-def build_nbextension():
-    # Check if npm is installed
-    if not which('npm'):
-        log.error('npm unavailable')
-    # Install Node depedencies for nbextension
-    try:
-        log.info('Installing nbextension dependencies. This may take a while...')
+        log.info("Installing nbextension dependencies with npm. This may take a while...")
         run(['npm', 'install'], cwd=os.path.join(repo_root, 'nbextension'))
-    except OSError as e:
-        log.error("Failed to install Node  dependencies for nbextension: %s" % e)
-        raise
-        
-def install_labextension():
-    # Check that jupyter lab is installed
-    if not which('jupyter', 'lab'):
-        log.error('jupyter lab unavailable')
-    # Install labextension
-    try:
-        run(['jupyter', 'labextension', 'install', '--py', sym_link, sys_prefix, '{{cookiecutter.extension_name}}'], cwd=repo_root)
-    except OSError as e:
-        log.error("Failed to install labextension: %s" % e)
-        raise
-    # Enable labextension
-    try:
-        run(['jupyter', 'labextension', 'enable', '--py', sys_prefix, '{{cookiecutter.extension_name}}'], cwd=repo_root)
-    except OSError as e:
-        log.error("Failed to enable labextension: %s" % e)
-        raise
 
-def install_nbextension():
-    # Check that jupyter notebook is installed
-    if not which('jupyter', 'notebook'):
-        log.error('jupyter notebook unavailable')
-    # Install nbextension
-    try:
-        run(['jupyter', 'nbextension', 'install', '--py', sym_link, sys_prefix, '{{cookiecutter.extension_name}}'], cwd=repo_root)
-    except OSError as e:
-        log.error("Failed to install nbextension: %s" % e)
-        raise
-    # Enable nbextension
-    try:
-        run(['jupyter', 'nbextension', 'enable', '--py', sys_prefix, '{{cookiecutter.extension_name}}'], cwd=repo_root)
-    except OSError as e:
-        log.error("Failed to enable nbextension: %s" % e)
-        raise
+        for t in self.targets:
+            if not os.path.exists(t):
+                msg = "Missing file: %s" % t
+                if not has_npm:
+                    msg += "\nnpm is required to build the development version"
+                raise ValueError(msg)
         
 class BuildCommand(develop):
     """Build Javascript extensions after Python installation"""
@@ -106,9 +110,9 @@ setup_args = dict(
         'ipython>=1.0.0'
     ],
     cmdclass                = {
-        'develop': BuildCommand
+        'jsdeps': NPM
     }
 )
-        
+
 if __name__ == '__main__':
     setup(**setup_args)
