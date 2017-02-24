@@ -1,4 +1,7 @@
 import { Widget } from '@phosphor/widgets';
+import React from 'react';
+import ReactDOM from 'react-dom';
+import {{cookiecutter.mime_short_name}}Component from '{{cookiecutter.extension_name}}_react';
 
 const MIME_TYPE = '{{cookiecutter.mime_type}}';
 const CLASS_NAME = 'jp-OutputWidget{{cookiecutter.mime_short_name}}';
@@ -28,11 +31,11 @@ export class OutputWidget extends Widget {
    */
   onBeforeDetach(msg) {
     /* Dispose of resources used by this widget */
-    // renderLibrary.dispose(this.node);
+    ReactDOM.unmountComponentAtNode(this.node);
   }
 
   /**
-   * A message handler invoked on an `'child-added'` message
+   * A message handler invoked on a `'child-added'` message
    */
   onChildAdded(msg) {
     /* e.g. Inject a static image representation into the mime bundle for
@@ -62,8 +65,10 @@ export class OutputWidget extends Widget {
       width: this.node.offsetWidth,
       height: this.node.offsetHeight
     };
-    const text = document.createTextNode(JSON.stringify(props));
-    this.node.appendChild(text);
+    ReactDOM.render(
+      <{{cookiecutter.mime_short_name}}Component {...props} />,
+      this.node
+    );
   }
 }
 

@@ -2,6 +2,9 @@ import { Widget } from '@phosphor/widgets';
 import { ABCWidgetFactory } from '@jupyterlab/docregistry';
 import { ActivityMonitor } from '@jupyterlab/coreutils';
 import { runMode } from '@jupyterlab/codemirror';
+import React from 'react';
+import ReactDOM from 'react-dom';
+import {{cookiecutter.mime_short_name}}Component from '{{cookiecutter.extension_name}}_react';
 
 const CLASS_NAME = 'jp-DocWidget{{cookiecutter.mime_short_name}}';
 const RENDER_TIMEOUT = 1000;
@@ -49,6 +52,7 @@ export class DocWidget extends Widget {
   dispose() {
     if (!this.isDisposed) {
       this._context = null;
+      ReactDOM.unmountComponentAtNode(this.node);
       this._monitor.dispose();
       super.dispose();
     }

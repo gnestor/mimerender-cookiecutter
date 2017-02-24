@@ -1,3 +1,6 @@
+import React from 'react';
+import ReactDOM from 'react-dom';
+import {{cookiecutter.mime_short_name}}Component from '{{cookiecutter.extension_name}}_react';
 import './index.css';
 
 const MIME_TYPE = '{{cookiecutter.mime_type}}';
@@ -7,8 +10,7 @@ const CLASS_NAME = 'output_{{cookiecutter.mime_short_name}} rendered_html';
  * Render data to the DOM node
  */
 function render(props, node) {
-  const text = document.createTextNode(JSON.stringify(props));
-  node.appendChild(text);
+  ReactDOM.render(<{{cookiecutter.mime_short_name}}Component {...props} />, node);
 }
 
 /**
@@ -104,6 +106,7 @@ export function register_renderer(notebook) {
 
 /**
  * Re-render cells with output data of '{{cookiecutter.mime_type}}' mime type
+ * on load notebook
  */
 export function render_cells(notebook) {
   /* Get all cells in notebook */
