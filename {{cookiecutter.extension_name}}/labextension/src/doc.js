@@ -9,6 +9,48 @@ import {{cookiecutter.mime_short_name}}Component from '{{cookiecutter.extension_
 const CLASS_NAME = 'jp-DocWidget{{cookiecutter.mime_short_name}}';
 const RENDER_TIMEOUT = 1000;
 
+{% raw %}
+class ErrorDisplay extends React.Component {
+  componentDidUpdate() {
+    runMode(this.props.content, { name: 'javascript', json: true }, this.ref);
+  }
+  render() {
+    return (
+      <div
+        className="jp-RenderedText jp-mod-error"
+        style={{
+          width: '100%',
+          minHeight: '100%',
+          textAlign: 'center',
+          padding: 10,
+          boxSizing: 'border-box'
+        }}
+      >
+        <span
+          style={{
+            fontSize: 18,
+            fontWeight: 500
+          }}
+        >
+          {this.props.message}
+        </span>
+        <pre
+          ref={ref => {
+            this.ref = ref;
+          }}
+          className="CodeMirror cm-s-jupyter CodeMirror-wrap"
+          style={{
+            textAlign: 'left',
+            padding: 10,
+            overflow: 'hidden'
+          }}
+        ></pre>
+      </div>
+    );
+  }
+}
+{% endraw %}
+
 /**
  * A widget for rendering {{cookiecutter.extension_name}} files
  */
@@ -86,6 +128,7 @@ export class DocWidget extends Widget {
    * A message handler invoked on an `'update-request'` message
    */
   onUpdateRequest(msg) {
+<<<<<<< HEAD
     if (this.isAttached && this._context.isReady) this._render();
   }
 
@@ -115,6 +158,26 @@ export class DocWidget extends Widget {
       container.appendChild(contentContainer);
       this.node.innerHTML = '';
       this.node.appendChild(container);
+=======
+    this.title.label = this._context.path.split('/').pop();
+    if (this.isAttached) {
+      const content = this._context.model.toString();
+      try {
+        const data = JSON.parse(content);
+        ReactDOM.render(
+          <{{cookiecutter.mime_short_name}}Component data={data} />,
+          this.node
+        );
+      } catch (error) {
+        ReactDOM.render(
+          <ErrorDisplay
+            message="Invalid JSON"
+            content={content}
+          />,
+          this.node
+        );
+      }
+>>>>>>> DisplayError component
     }
   }
 
