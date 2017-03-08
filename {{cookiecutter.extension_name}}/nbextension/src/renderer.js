@@ -72,6 +72,11 @@ export function register_renderer(notebook) {
     };
     render(props, toinsert[0]);
     element.append(toinsert);
+    // Unmount component on this.clear_output
+    const that = this;
+    this.element.on('changed', () => {
+      if (that.outputs.length > 0) ReactDOM.unmountComponentAtNode(toinsert[0]);
+    });
     return toinsert;
   };
 
