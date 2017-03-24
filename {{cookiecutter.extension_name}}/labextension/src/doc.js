@@ -30,6 +30,10 @@ export class DocWidget extends Widget {
       timeout: RENDER_TIMEOUT
     });
     this._monitor.activityStopped.connect(this.update, this);
+    /* Track widget width and height */
+    this._width = this.node.offsetWidth;
+    this._height = this.node.offsetHeight;
+    this.addClass(CLASS_NAME);
   }
 
   /**
