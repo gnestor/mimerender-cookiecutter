@@ -7,7 +7,7 @@ const CLASS_NAME = 'output_{{cookiecutter.mime_short_name}} rendered_html';
  * Render data to the DOM node
  */
 function render(props, node) {
-  const text = document.createTextNode(JSON.stringify(props.data));
+  const text = document.createTextNode(JSON.stringify(props));
   node.appendChild(text);
 }
 
@@ -18,19 +18,19 @@ function handleClearOutput(event, { cell: { output_area } }) {
   /* Get rendered DOM node */
   const toinsert = output_area.element.find(CLASS_NAME.split(' ')[0]);
   /* e.g. Dispose of resources used by renderer library */
-  // if (toinsert) renderLibrary.dispose(toinsert[0]);
+  // if (toinsert[0]) renderLibrary.dispose(toinsert[0]);
 }
 
 /**
  * Handle when a new output is added
  */
-function handleAddOutput(event,  { output, output_area }) {
+function handleAddOutput(event, { output, output_area }) {
   /* Get rendered DOM node */
   const toinsert = output_area.element.find(CLASS_NAME.split(' ')[0]);
   /** e.g. Inject a static image representation into the mime bundle for
    *  endering on Github, etc.
    */
-  // if (toinsert) {
+  // if (toinsert[0]) {
   //   renderLibrary.toPng(toinsert[0]).then(url => {
   //     const data = url.split(',')[1];
   //     output_area.outputs
@@ -62,7 +62,12 @@ export function register_renderer(notebook) {
     );
     this.keyboard_manager.register_events(toinsert);
     /* Render data to DOM node */
-    const props = { data, metadata };
+    const props = { 
+      data,
+      metadata: metadata[MIME_TYPE],
+      width: element.width(),
+      height: element.height()
+    };
     render(props, toinsert[0]);
     element.append(toinsert);
     return toinsert;

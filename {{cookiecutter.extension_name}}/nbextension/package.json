@@ -1,4 +1,5 @@
 {
+  "private": true,
   "name": "{{cookiecutter.extension_name}}_nbextension",
   "version": "0.18.0",
   "description": "A Jupyter Notebook extension for rendering {{cookiecutter.mime_short_name}}",
@@ -13,10 +14,10 @@
     "build": "webpack",
     "watch": "watch \"npm run build\" src --wait 10 --ignoreDotFiles",
     "prepublish": "npm run build",
-    "extension:install": "jupyter nbextension install --symlink --py --sys-prefix notebook_json",
-    "extension:uninstall": "jupyter nbextension uninstall --py --sys-prefix notebook_json",
-    "extension:enable": "jupyter nbextension enable --py --sys-prefix notebook_json",
-    "extension:disable": "jupyter nbextension disable --py --sys-prefix notebook_json"
+    "extension:install": "jupyter nbextension install --symlink --py --sys-prefix {{cookiecutter.extension_name}}",
+    "extension:uninstall": "jupyter nbextension uninstall --py --sys-prefix {{cookiecutter.extension_name}}",
+    "extension:enable": "jupyter nbextension enable --py --sys-prefix {{cookiecutter.extension_name}}",
+    "extension:disable": "jupyter nbextension disable --py --sys-prefix {{cookiecutter.extension_name}}"
   },
   "dependencies": {
     

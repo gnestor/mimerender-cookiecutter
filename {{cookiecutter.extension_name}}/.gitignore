@@ -1,14 +1,14 @@
 labextension/lib/
 nbextension/lib/
 nbextension/embed/
-*/node_modules/
+node_modules/
 npm-debug.log
 *.egg-info/
+__pycache__/
 build/
 dist/
 
 # Compiled javascript
-{{cookiecutter.extension_name}}/__pycache__/
 {{cookiecutter.extension_name}}/static/
 
 # OS X
