@@ -4,7 +4,7 @@
   "version": "0.18.0",
   "description": "A JupyterLab extension for rendering {{cookiecutter.mime_short_name}}",
   "author": "{{cookiecutter.author_name}} <{{cookiecutter.author_email}}>",
-  "main": "lib/plugin.js",
+  "main": "src/plugin.js",
   "keywords": [
     "jupyter",
     "jupyterlab",

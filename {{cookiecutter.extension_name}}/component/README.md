@@ -1,6 +1,6 @@
-# {{cookiecutter.extension_name}}
+# component
 
-The React component(s)
+A React component for rendering {{cookiecutter.mime_short_name}}
 
 ## Structure
 

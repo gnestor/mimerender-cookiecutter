@@ -128,7 +128,6 @@ export class DocWidget extends Widget {
    * A message handler invoked on an `'update-request'` message
    */
   onUpdateRequest(msg) {
-<<<<<<< HEAD
     if (this.isAttached && this._context.isReady) this._render();
   }
 
@@ -140,44 +139,18 @@ export class DocWidget extends Widget {
         width: this.node.offsetWidth,
         height: this.node.offsetHeight
       };
-      const text = document.createTextNode(JSON.stringify(props));
-      this.node.appendChild(text);
+      ReactDOM.render(
+        <{{cookiecutter.mime_short_name}}Component {...props} />,
+        this.node
+      );
     } catch (error) {
-      const container = document.createElement('div');
-      container.setAttribute('class', 'jp-RenderedText jp-mod-error');
-      container.style.cssText = `width: 100%; text-align: center; padding: 10px; box-sizing: border-box;`;
-      const titleContainer = document.createElement('span');
-      titleContainer.style.cssText = `font-size: 18px; font-weight: 500; padding-bottom: 10px;`;
-      const titleText = document.createTextNode('Invalid JSON');
-      titleContainer.appendChild(titleText);
-      container.appendChild(titleContainer);
-      const contentContainer = document.createElement('pre');
-      contentContainer.className = 'CodeMirror cm-s-jupyter CodeMirror-wrap';
-      contentContainer.style.cssText = `text-align: left; padding: 10px; overflow: hidden;`;
-      runMode(content, { name: 'javscript', json: true }, contentContainer);
-      container.appendChild(contentContainer);
-      this.node.innerHTML = '';
-      this.node.appendChild(container);
-=======
-    this.title.label = this._context.path.split('/').pop();
-    if (this.isAttached) {
-      const content = this._context.model.toString();
-      try {
-        const data = JSON.parse(content);
-        ReactDOM.render(
-          <{{cookiecutter.mime_short_name}}Component data={data} />,
-          this.node
-        );
-      } catch (error) {
-        ReactDOM.render(
-          <ErrorDisplay
-            message="Invalid JSON"
-            content={content}
-          />,
-          this.node
-        );
-      }
->>>>>>> DisplayError component
+      ReactDOM.render(
+        <ErrorDisplay
+          message="Invalid JSON"
+          content={content}
+        />,
+        this.node
+      );
     }
   }
 
